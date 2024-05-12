@@ -1,0 +1,30 @@
+// handle constant values
+
+import {
+    createDeserializeFunction,
+    createSerializeFunction,
+    type Parser
+} from "./utils";
+
+
+const calculateSize = () => 0;
+
+export const createConstantParser = <T>(constant: T, identify) => {
+    const serializeInternal = (_value, _dataView, indexInBuffer) => indexInBuffer;
+    const serialize = createSerializeFunction(serializeInternal);
+    const deserializeInternal = (_dataView, _index) => ({
+        v: constant,
+        l: 0,
+    });
+    const deserialize = createDeserializeFunction(deserializeInternal);
+
+    return ({
+        serialize,
+        deserialize,
+        serializeInternal,
+        deserializeInternal,
+        identify: identify || ((value) => (value === constant)),
+        calculateMinSize: calculateSize,
+        calculateMaxSize: calculateSize,
+    } as Parser<T>)
+};

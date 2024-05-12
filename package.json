@@ -1,0 +1,20 @@
+{
+  "name": "@mrk4/json-to-array-buffer",
+  "version": "0.0.0",
+  "description": "Trade the type and structure information of JSON for size.",
+  "module": "build/index.mjs",
+  "main": "build/index.mjs",
+  "types": "build/index.d.ts",
+  "files": [
+    "build/"
+  ],
+  "scripts": {
+    "build": "vite build --emptyOutDir"
+  },
+  "author": "Abhishek Khurana",
+  "license": "MIT",
+  "devDependencies": {
+    "vite": "^5.2.7",
+    "vite-plugin-dts": "^3.8.1"
+  }
+}

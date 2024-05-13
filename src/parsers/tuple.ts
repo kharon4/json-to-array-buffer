@@ -30,6 +30,7 @@ export const createTupleParser = <T extends Parser[]>(...parsers: T) => {
     const deserializeInternal = (dataView, index) => {
         const value = [] as { [I in keyof T]: ReturnType<T[I]['deserialize']> };
         value.length = parsers.length;
+        let length = index;
         parsers.forEach((parser, index) => {
             const {v, l} = parser.deserializeInternal(dataView, index + length);
             value[index] = v;

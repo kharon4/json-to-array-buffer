@@ -19,6 +19,7 @@ import { createBoolParser } from './parsers/boolean';
 import { createOrParser } from './parsers/or';
 import { createObjectParser } from './parsers/object';
 import { createArrayParser } from './parsers/array';
+import { createTupleParser } from './parsers/tuple'
 import { createConstantParser } from './parsers/constant';
 
 export {
@@ -39,6 +40,7 @@ export {
     createOrParser,
     createObjectParser,
     createArrayParser,
+    createTupleParser,
     createConstantParser,
 
     // datatype versions
@@ -71,6 +73,7 @@ export {
     createOrParser as or,
     createObjectParser as obj,
     createArrayParser as arr,
+    createTupleParser as tuple,
     createConstantParser as constant,
 };
 

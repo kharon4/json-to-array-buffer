@@ -1,6 +1,6 @@
 {
   "name": "@mrk4/json-to-array-buffer",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Trade the type and structure information of JSON for size.",
   "module": "build/index.mjs",
   "main": "build/index.mjs",

@@ -13,17 +13,17 @@ import {
 
 const defaultArrayIdentifier = ((value) => Array.isArray(value))
 
-export const createArrayParser = <T extends Parser>(parser: T, identify: ((value: any) => boolean) = defaultArrayIdentifier, maxLen = Number.MAX_SAFE_INTEGER) => {
+export const createArrayParser = <T extends Parser>(parser: T, maxLen = Number.MAX_SAFE_INTEGER, identify: ((value: any) => boolean) = defaultArrayIdentifier) => {
     
     let getOprationName: DataViewGetterFunctionName = 'getUint32';
     let setOprationName: DataViewSetterFunctionName = 'setUint32';
     let bytesForLen = 4;
-    if(maxLen <= _16bitRange){
+    if(maxLen < _16bitRange){
         getOprationName = 'getUint16';
         setOprationName = 'setUint16';
         bytesForLen = 2;
     }
-    if(maxLen <= _8bitRange){
+    if(maxLen < _8bitRange){
         getOprationName = 'getUint8';
         setOprationName = 'setUint8';
         bytesForLen = 1;
@@ -33,7 +33,7 @@ export const createArrayParser = <T extends Parser>(parser: T, identify: ((value
 
     // functions
     const serializeInternal = (value, dataView, indexInBuffer) => {
-        pushToDataView(dataView, indexInBuffer, value, setOprationName);
+        pushToDataView(dataView, indexInBuffer, value.length, setOprationName);
         let nextIndex = indexInBuffer + bytesForLen;
         value.forEach(element => {
             const _nextIndex = parser.serializeInternal(element, dataView, nextIndex);
@@ -71,7 +71,6 @@ export const createArrayParser = <T extends Parser>(parser: T, identify: ((value
         calculateMaxSize,
         calculateMinSize,
     })
-
 
     return rVal;
 };

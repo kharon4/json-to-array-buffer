@@ -11,9 +11,7 @@ import {
     createDeserializeFunction,
 } from './utils';
 
-const defaultArrayIdentifier = ((value) => Array.isArray(value))
-
-export const createArrayParser = <T extends Parser>(parser: T, maxLen = Number.MAX_SAFE_INTEGER, identify: ((value: any) => boolean) = defaultArrayIdentifier) => {
+export const createArrayParser = <T extends Parser>(parser: T, maxLen = Number.MAX_SAFE_INTEGER, identify?: ((value: any) => boolean)) => {
     
     let getOprationName: DataViewGetterFunctionName = 'getUint32';
     let setOprationName: DataViewSetterFunctionName = 'setUint32';
@@ -59,6 +57,12 @@ export const createArrayParser = <T extends Parser>(parser: T, maxLen = Number.M
         }
     };
     const deserialize = createDeserializeFunction(deserializeInternal);
+    const _identify = identify || ((value) => {
+        if(!Array.isArray(value))return false;
+        if(value.length > maxLen)return false;
+        for(let i = 0 ; i < value.length; ++i)if(!parser.identify(value[i]))return false;
+        return true;
+    })
     const calculateMinSize = () => bytesForLen;
     const calculateMaxSize = () => max;
 
@@ -67,7 +71,7 @@ export const createArrayParser = <T extends Parser>(parser: T, maxLen = Number.M
         deserialize,
         serializeInternal,
         deserializeInternal,
-        identify,
+        identify: _identify,
         calculateMaxSize,
         calculateMinSize,
     })

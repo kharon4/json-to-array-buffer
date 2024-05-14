@@ -5,7 +5,7 @@ import {
     type Parser,
 } from "./utils";
 
-export const createTupleParser = <T extends Parser[]>(...parsers: T) => {
+export const createTupleParser = <T extends Parser[]>(parsers: T, identify?: (value: any) => boolean) => {
     let max = 0;
     let min = 0;
 
@@ -13,11 +13,11 @@ export const createTupleParser = <T extends Parser[]>(...parsers: T) => {
         max += parser.calculateMaxSize();
         min += parser.calculateMinSize();
     });
-    const identify = (value) => {
+    const _identify = identify || ((value) => {
         if(!Array.isArray(value) || value.length!==parsers.length)return false;
         for(let i = 0 ; i < value.length; ++i)if(!parsers[i].identify(value[i]))return false;
         return true;
-    }
+    })
     const serializeInternal = (value, dataView, indexInBuffer) => {
         let nextIndex = indexInBuffer;
         parsers.forEach((parser, index) => {
@@ -30,10 +30,10 @@ export const createTupleParser = <T extends Parser[]>(...parsers: T) => {
     const deserializeInternal = (dataView, index) => {
         const value = [] as { [I in keyof T]: ReturnType<T[I]['deserialize']> };
         value.length = parsers.length;
-        let length = index;
-        parsers.forEach((parser, index) => {
+        let length = 0;
+        parsers.forEach((parser, tupeLindex) => {
             const {v, l} = parser.deserializeInternal(dataView, index + length);
-            value[index] = v;
+            value[tupeLindex] = v;
             length += l;
         })
         return {
@@ -50,7 +50,7 @@ export const createTupleParser = <T extends Parser[]>(...parsers: T) => {
         deserialize,
         serializeInternal,
         deserializeInternal,
-        identify,
+        identify: _identify,
         calculateMaxSize,
         calculateMinSize,
     } as Parser<{[key in keyof T]: ReturnType<T[key]["deserializeInternal"]>["v"]}>);

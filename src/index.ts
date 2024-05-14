@@ -21,7 +21,10 @@ import { createObjectParser } from './parsers/object';
 import { createArrayParser } from './parsers/array';
 import { createTupleParser } from './parsers/tuple'
 import { createConstantParser } from './parsers/constant';
-import { createFixedLengthCustomParser } from './parsers/custom'
+import {
+    createFixedLengthCustomParser,
+    createDynamicLengthCustomParser,
+} from './parsers/custom'
 
 export {
     createUint8StringParser,
@@ -44,8 +47,9 @@ export {
     createTupleParser,
     createConstantParser,
     createFixedLengthCustomParser,
+    createDynamicLengthCustomParser,
 
-    // datatype versions
+    // renamed versions
     createUint8StringParser as uint8String,
     createUint16StringParser as uint16String,
     createUint32StringParser as uint32String,
@@ -77,7 +81,8 @@ export {
     createArrayParser as arr,
     createTupleParser as tuple,
     createConstantParser as constant,
-    createFixedLengthCustomParser as custom,
+    createFixedLengthCustomParser as customFixed,
+    createDynamicLengthCustomParser as customDynamic,
 };
 
 

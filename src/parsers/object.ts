@@ -5,9 +5,7 @@ import {
     type Parser,
 } from "./utils";
 
-const defaultObjectIdentifier = ((value) => typeof value === 'object')
-
-export const createObjectParser = <T extends {[key: string]: Parser}>(object: T, identify: ((value: any) => boolean) = defaultObjectIdentifier) => {
+export const createObjectParser = <T extends {[key: string]: Parser}>(object: T, identify?: ((value: any) => boolean)) => {
     let max = 0;
     let min = 0;
 
@@ -42,6 +40,14 @@ export const createObjectParser = <T extends {[key: string]: Parser}>(object: T,
         }
     };
     const deserialize = createDeserializeFunction(deserializeInternal);
+    const _identify = identify || ((v) => {
+        if(typeof v !== 'object')return false;
+        for(let i = 0 ; i < keys.length; ++i){
+            const key = keys[i];
+            if(!object[key].identify(v[key]))return false;
+        }
+        return true;
+    });
     const calculateMinSize = () => min;
     const calculateMaxSize = () => max;
 
@@ -50,7 +56,7 @@ export const createObjectParser = <T extends {[key: string]: Parser}>(object: T,
         deserialize,
         serializeInternal,
         deserializeInternal,
-        identify,
+        identify: _identify,
         calculateMaxSize,
         calculateMinSize,
     } as Parser<{[key in keyof T]: ReturnType<T[key]["deserializeInternal"]>["v"]}>);

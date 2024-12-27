@@ -78,9 +78,8 @@ const inserSizes: {
 
 export const pushToDataView = (dataView: DataView, index: number, value: any, insertFunction: DataViewSetterFunctionName) => {
     const insertSize = inserSizes[insertFunction];
-    const buffer = dataView.buffer;
     //@ts-ignore
-    while(buffer.byteLength < index + insertSize)dataView = resizeDataViewBuffer(dataView ,buffer.byteLength * 2);
+    while(dataView.buffer.byteLength < index + insertSize)dataView = resizeDataViewBuffer(dataView, dataView.buffer.byteLength * 2);
     dataView[insertFunction](index, value as never);
     return dataView;
 }

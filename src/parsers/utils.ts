@@ -29,7 +29,7 @@ const resizeDataViewBuffer = (DV: DataView<ArrayBuffer>, newSize: number) => {
         for(let i = 0; i < copyLen; ++i){
             newDV.setUint8(i, DV.getUint8(i));
         }
-        return DV;
+        return newDV;
     }
 }
 
@@ -37,7 +37,7 @@ export const createSerializeFunction = <T>(serializeInternalFunction: Parser<T>[
     return (value: T, arrayBufferMaxLen?: number) => {
         const dataView = generateDefaultBufferDataView(arrayBufferMaxLen);
         const [finalSize, newDataView] = serializeInternalFunction(value, dataView, 0);
-        const resizedDataView = resizeDataViewBuffer(newDataView, finalSize);
+        const resizedDataView = resizeDataViewBuffer(newDataView as DataView<ArrayBuffer>, finalSize);
         return resizedDataView.buffer;
     }
 }

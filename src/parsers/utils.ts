@@ -1,5 +1,5 @@
 export type Parser <T = any>= {
-    serializeInternal: (value: T, dataView: DataView, indexInBuffer: number) => number, // the final size of the total buffer
+    serializeInternal: (value: T, dataView: DataView, indexInBuffer: number) => [number, DataView], // the final size of the total buffer
     deserializeInternal: (dataView: DataView, index: number) => ({
         v: T,
         l: number,
@@ -18,13 +18,27 @@ const generateDefaultBufferDataView = (maxByteLength = defaultBufferMaxSize) => 
     return new DataView(new ArrayBuffer(1, {maxByteLength}));
 }
 
+// polyfill 
+const resizeDataViewBuffer = (DV: DataView<ArrayBuffer>, newSize: number) => {
+    if(DV.buffer.resize){
+        DV.buffer.resize(newSize);
+        return DV;
+    }else{
+        const newDV = new DataView(new ArrayBuffer(newSize));
+        const copyLen = Math.min(DV.byteLength, newSize);
+        for(let i = 0; i < copyLen; ++i){
+            newDV.setUint8(i, DV.getUint8(i));
+        }
+        return DV;
+    }
+}
+
 export const createSerializeFunction = <T>(serializeInternalFunction: Parser<T>["serializeInternal"]) => {
     return (value: T, arrayBufferMaxLen?: number) => {
         const dataView = generateDefaultBufferDataView(arrayBufferMaxLen);
-        const finalSize = serializeInternalFunction(value, dataView, 0);
-        //@ts-ignore
-        dataView.buffer.resize(finalSize)
-        return dataView.buffer;
+        const [finalSize, newDataView] = serializeInternalFunction(value, dataView, 0);
+        const resizedDataView = resizeDataViewBuffer(newDataView, finalSize);
+        return resizedDataView.buffer;
     }
 }
 
@@ -66,7 +80,8 @@ export const pushToDataView = (dataView: DataView, index: number, value: any, in
     const insertSize = inserSizes[insertFunction];
     const buffer = dataView.buffer;
     //@ts-ignore
-    while(buffer.byteLength < index + insertSize)buffer.resize(buffer.byteLength * 2);
+    while(buffer.byteLength < index + insertSize)dataView = resizeDataViewBuffer(dataView ,buffer.byteLength * 2);
     dataView[insertFunction](index, value as never);
+    return dataView;
 }
 

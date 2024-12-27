@@ -20,8 +20,9 @@ export const createFixedLengthCustomParser = <T>(
 ) => {
     const serializeInternal = (value, dataView, indexInBuffer) => {
         const buffer = serializer(value);
-        for(let i = 0 ; i < bufferLen; ++i)pushToDataView(dataView, indexInBuffer + i, buffer[i], 'setUint8');
-        return indexInBuffer + bufferLen;
+        let newDataView = dataView;
+        for(let i = 0 ; i < bufferLen; ++i)newDataView = pushToDataView(newDataView, indexInBuffer + i, buffer[i], 'setUint8');
+        return [indexInBuffer + bufferLen, newDataView];
     };
     const serialize = createSerializeFunction(serializeInternal);
     const deserializeInternal = (dataView, index) => ({
@@ -66,9 +67,9 @@ export const createDynamicLengthCustomParser = <T>(
 
     const serializeInternal = (value, dataView, indexInBuffer) => {
         const buffer = serializer(value);
-        pushToDataView(dataView, indexInBuffer, buffer.byteLength, setOprationName);
-        for(let i = 0 ; i < buffer.byteLength; ++i)pushToDataView(dataView, indexInBuffer + i + bytesForLen, buffer[i], 'setUint8');
-        return indexInBuffer + buffer.byteLength + bytesForLen;
+        let newDataView = pushToDataView(dataView, indexInBuffer, buffer.byteLength, setOprationName);
+        for(let i = 0 ; i < buffer.byteLength; ++i)newDataView = pushToDataView(newDataView, indexInBuffer + i + bytesForLen, buffer[i], 'setUint8');
+        return [indexInBuffer + buffer.byteLength + bytesForLen, newDataView];
     };
     const serialize = createSerializeFunction(serializeInternal);
     const deserializeInternal = (dataView, index) => {

@@ -20,11 +20,13 @@ export const createTupleParser = <T extends Parser[]>(parsers: T, identify?: (va
     })
     const serializeInternal = (value, dataView, indexInBuffer) => {
         let nextIndex = indexInBuffer;
+        let newDataView = dataView;
         parsers.forEach((parser, index) => {
-            const _nextIndex = parser.serializeInternal(value[index], dataView, nextIndex);
+            const [_nextIndex, _nextDataView] = parser.serializeInternal(value[index], newDataView, nextIndex);
             nextIndex = _nextIndex;
+            newDataView = _nextDataView;
         })
-        return nextIndex;
+        return [nextIndex, newDataView];
     };
     const serialize = createSerializeFunction(serializeInternal);
     const deserializeInternal = (dataView, index) => {

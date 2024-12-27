@@ -76,11 +76,11 @@ export const createOrParser = <T extends SupportedTypes[]>(...values: T) => {
                 throw `could not serialize ${value}, no parser found`;
             }
         }
-        pushToDataView(dataView, indexInBuffer, index, setOprationName);
-        const nextIndex = moreDataNeeded ? 
-            (values[index] as Parser).serializeInternal(value, dataView, indexInBuffer + bytesForPossibilities) :
-            indexInBuffer + bytesForPossibilities;
-        return nextIndex;
+        let newDataView = pushToDataView(dataView, indexInBuffer, index, setOprationName);
+        const [nextIndex, nextDataView] = moreDataNeeded ? 
+            (values[index] as Parser).serializeInternal(value, newDataView, indexInBuffer + bytesForPossibilities) :
+            [indexInBuffer + bytesForPossibilities, newDataView];
+        return [nextIndex, nextDataView];
     };
     const serialize = createSerializeFunction(serializeInternal);
     const deserializeInternal = (dataView, index) => {

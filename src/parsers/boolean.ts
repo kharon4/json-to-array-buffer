@@ -9,8 +9,8 @@ import {
 
 
 const serializeInternal = (value, dataView, indexInBuffer) => {
-    pushToDataView(dataView, indexInBuffer, value ? 1 : 0, 'setUint8');
-    return indexInBuffer + 1;
+    const newDataView = pushToDataView(dataView, indexInBuffer, value ? 1 : 0, 'setUint8');
+    return [indexInBuffer + 1, newDataView];
 };
 const serialize = createSerializeFunction(serializeInternal);
 const deserializeInternal = (dataView, index) => ({

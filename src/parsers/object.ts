@@ -19,11 +19,13 @@ export const createObjectParser = <T extends {[key: string]: Parser}>(object: T,
 
     const serializeInternal = (value, dataView, indexInBuffer) => {
         let nextIndex = indexInBuffer;
+        let newDataView = dataView;
         keys.forEach(key => {
-            const _nextIndex = object[key].serializeInternal(value[key], dataView, nextIndex);
+            const [_nextIndex, _nextDataView] = object[key].serializeInternal(value[key], newDataView, nextIndex);
             nextIndex = _nextIndex;
+            newDataView = _nextDataView;
         })
-        return nextIndex;
+        return [nextIndex, newDataView];
     };
     const serialize = createSerializeFunction(serializeInternal);
     const deserializeInternal = (dataView, index) => {

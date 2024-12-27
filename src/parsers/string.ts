@@ -29,9 +29,9 @@ const serializeInternalUint8 = (value, dataView, indexInBuffer) => {
     const buffer = textEncoder.encode(value);
     if(buffer.byteLength > _8bitRange - 1)
         throw `can not serialize the string: ${JSON.stringify(value)}, which has a utf-8 encoding length of ${buffer.byteLength} as a Uint8String.`
-    pushToDataView(dataView, indexInBuffer, buffer.byteLength, 'setUint8');
-    for(let i = 0 ; i < buffer.byteLength; ++i)pushToDataView(dataView, indexInBuffer + i + 1, buffer[i], 'setUint8');
-    return indexInBuffer + 1 + buffer.byteLength;
+    let newDataView = pushToDataView(dataView, indexInBuffer, buffer.byteLength, 'setUint8');
+    for(let i = 0 ; i < buffer.byteLength; ++i)newDataView = pushToDataView(newDataView, indexInBuffer + i + 1, buffer[i], 'setUint8');
+    return [indexInBuffer + 1 + buffer.byteLength, newDataView];
 };
 const serializeUint8 = createSerializeFunction(serializeInternalUint8);
 const deserializeInternalUint8 = (dataView, index) => {
@@ -63,9 +63,9 @@ const serializeInternalUint16 = (value, dataView, indexInBuffer) => {
     const buffer = textEncoder.encode(value);
     if(buffer.byteLength > _16bitRange - 2)
         throw `can not serialize the string: ${JSON.stringify(value)}, which has a utf-8 encoding length of ${buffer.byteLength} as a Uint16String.`
-    pushToDataView(dataView, indexInBuffer, buffer.byteLength, 'setUint16');
-    for(let i = 0 ; i < buffer.byteLength; ++i)pushToDataView(dataView, indexInBuffer + i + 2, buffer[i], 'setUint8');
-    return indexInBuffer + 2 + buffer.byteLength;
+    let newDataView = pushToDataView(dataView, indexInBuffer, buffer.byteLength, 'setUint16');
+    for(let i = 0 ; i < buffer.byteLength; ++i)newDataView = pushToDataView(newDataView, indexInBuffer + i + 2, buffer[i], 'setUint8');
+    return [indexInBuffer + 2 + buffer.byteLength, newDataView];
 };
 const serializeUint16 = createSerializeFunction(serializeInternalUint16);
 const deserializeInternalUint16 = (dataView, index) => {
@@ -96,9 +96,9 @@ const serializeInternalUint32 = (value, dataView, indexInBuffer) => {
     const buffer = textEncoder.encode(value);
     if(buffer.byteLength > _32bitRange - 4)
         throw `can not serialize the string: ${JSON.stringify(value)}, which has a utf-8 encoding length of ${buffer.byteLength} as a Uint32String.`
-    pushToDataView(dataView, indexInBuffer, buffer.byteLength, 'setUint32');
-    for(let i = 0 ; i < buffer.byteLength; ++i)pushToDataView(dataView, indexInBuffer + i + 4, buffer[i], 'setUint8');
-    return indexInBuffer + 4 + buffer.byteLength;
+    let newDataView = pushToDataView(dataView, indexInBuffer, buffer.byteLength, 'setUint32');
+    for(let i = 0 ; i < buffer.byteLength; ++i)newDataView = pushToDataView(newDataView, indexInBuffer + i + 4, buffer[i], 'setUint8');
+    return [indexInBuffer + 4 + buffer.byteLength, newDataView];
 };
 const serializeUint32 = createSerializeFunction(serializeInternalUint32);
 const deserializeInternalUint32 = (dataView, index) => {

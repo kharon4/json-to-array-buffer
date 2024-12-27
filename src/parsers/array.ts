@@ -31,13 +31,14 @@ export const createArrayParser = <T extends Parser>(parser: T, maxLen = Number.M
 
     // functions
     const serializeInternal = (value, dataView, indexInBuffer) => {
-        pushToDataView(dataView, indexInBuffer, value.length, setOprationName);
+        let newDataView = pushToDataView(dataView, indexInBuffer, value.length, setOprationName);
         let nextIndex = indexInBuffer + bytesForLen;
         value.forEach(element => {
-            const _nextIndex = parser.serializeInternal(element, dataView, nextIndex);
+            const [_nextIndex, nextDataView] = parser.serializeInternal(element, newDataView, nextIndex);
+            newDataView = nextDataView;
             nextIndex = _nextIndex;
         })
-        return nextIndex;
+        return [nextIndex, newDataView];
     };
     const serialize = createSerializeFunction(serializeInternal);
     const deserializeInternal = (dataView, index) => {

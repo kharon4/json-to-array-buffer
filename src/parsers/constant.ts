@@ -10,7 +10,7 @@ import {
 const calculateSize = () => 0;
 
 export const createConstantParser = <T>(constant: T, identify?: (value: any) => boolean) => {
-    const serializeInternal = (_value, _dataView, indexInBuffer) => indexInBuffer;
+    const serializeInternal = (_value, dataView, indexInBuffer) => [indexInBuffer, dataView];
     const serialize = createSerializeFunction(serializeInternal);
     const deserializeInternal = (_dataView, _index) => ({
         v: constant,
